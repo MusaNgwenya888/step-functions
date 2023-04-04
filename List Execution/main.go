@@ -35,6 +35,8 @@ func main() {
 	fmt.Println("ABORTED")
 	time.Sleep(1 * time.Second)
 	fmt.Println("RUNNING")
+	time.Sleep(1 * time.Second)
+	fmt.Println("TIMED_OUT")
 	fmt.Println("Type now...")
 	fmt.Scanln(&statusInput)
 	status := statusInput
