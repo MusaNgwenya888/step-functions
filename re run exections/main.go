@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -24,7 +25,19 @@ func main() {
 
 	// Specify the ARN of the state machine to re-run failed executions for
 	stateMachineArn := OrdersLive
-	status := "RUNNING"
+
+	var statusInput string
+	fmt.Println("Please enter what type of execution status you want to see:")
+	fmt.Println("FAILED")
+	time.Sleep(1 * time.Second)
+	fmt.Println("SUCCEEDED")
+	time.Sleep(1 * time.Second)
+	fmt.Println("ABORTED")
+	time.Sleep(1 * time.Second)
+	fmt.Println("RUNNING")
+	fmt.Println("Type now...")
+	fmt.Scanln(&statusInput)
+	status := statusInput
 
 	// List the failed executions for the state machine
 	listInput := &sfn.ListExecutionsInput{
@@ -72,22 +85,22 @@ func main() {
 
 		fmt.Printf("Here are all executions with the status of '%s' : %s\n", status, input)
 
-		// // Create a new StartExecutionInput with the state machine ARN and input
-		// startInput := &sfn.StartExecutionInput{
-		// 	StateMachineArn: aws.String(stateMachineArn),
-		// 	Input:           aws.String(input),
-		// 	Name:            aws.String("Retry-" + *execution.Name),
-		// }
+		// Create a new StartExecutionInput with the state machine ARN and input
+		startInput := &sfn.StartExecutionInput{
+			StateMachineArn: aws.String(stateMachineArn),
+			Input:           aws.String(input),
+			Name:            aws.String("Retry-" + *execution.Name),
+		}
 
-		// // Call the StartExecution method to re-run the execution with the specified input
-		// startResp, err := svc.StartExecution(startInput)
-		// if err != nil {
-		// 	fmt.Println("Error re-running execution:", err)
-		// 	continue
-		// }
+		// Call the StartExecution method to re-run the execution with the specified input
+		startResp, err := svc.StartExecution(startInput)
+		if err != nil {
+			fmt.Println("Error re-running execution:", err)
+			continue
+		}
 
-		// // Print out the ARN of the new execution that was started
-		// fmt.Println("New execution started with ARN:", *startResp.ExecutionArn)
+		// Print out the ARN of the new execution that was started
+		fmt.Println("New execution started with ARN:", *startResp.ExecutionArn)
 	}
 
 	fmt.Println(">>>>>>>>>>>> DONE :-) <<<<<<<<<<<<")

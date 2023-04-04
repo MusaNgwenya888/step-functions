@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -25,7 +26,17 @@ func main() {
 
 	// Specify the ARN of the state machine to re-run failed executions for
 	stateMachineArn := OrdersTest
-	status := "RUNNING"
+
+	var statusInput string
+	fmt.Println("Please enter what type of execution status you want to see:")
+	fmt.Println("FAILED")
+	time.Sleep(1 * time.Second)
+	fmt.Println("SUCCEEDED")
+	time.Sleep(1 * time.Second)
+	fmt.Println("RUNNING")
+	fmt.Println("Type now...")
+	fmt.Scanln(&statusInput)
+	status := statusInput
 
 	// List the failed executions for the state machine
 	listInput := &sfn.ListExecutionsInput{
