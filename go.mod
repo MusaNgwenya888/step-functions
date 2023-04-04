@@ -1,4 +1,4 @@
-module reRunStepFunctions
+module StepFunctions
 
 go 1.18
 
