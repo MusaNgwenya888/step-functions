@@ -4,25 +4,19 @@ import (
 	"fmt"
 	"time"
 
+	utility "StepFunctions/Utilities"
+
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sfn"
 )
 
 func main() {
+	a := utility.NewAwssession("")
 	fmt.Println(">>>>>>>>>>>> Starting :-) <<<<<<<<<<<<")
 	// ActivityLive := "arn:aws:states:us-east-1:389633136494:stateMachine:ACTIVITIES-LI0zVfbremKg"
 	// ActivityTest := "arn:aws:states:us-east-1:389633136494:stateMachine:ACTIVITIESTEST-gqNiSvxWmzQL"
 	// OrdersLive := "arn:aws:states:us-east-1:389633136494:stateMachine:RAPISAMStateMachine-1YwcU3XmIcZ5"
 	OrdersTest := "arn:aws:states:us-east-1:389633136494:stateMachine:RAPISAMTESTStateMachine-iHrvhFFyHHfR"
-
-	// Create a new session with the AWS SDK for Go
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-
-	// Create a new StepFunctions client
-	svc := sfn.New(sess)
 
 	// Specify the ARN of the state machine to re-run failed executions for
 	stateMachineArn := OrdersTest
@@ -44,7 +38,7 @@ func main() {
 		StatusFilter:    aws.String(status),
 	}
 
-	resp, err := svc.ListExecutions(listInput)
+	resp, err := a.Sfc.ListExecutions(listInput)
 	if err != nil {
 		fmt.Println("Error listing executions:", err)
 		return
@@ -57,7 +51,7 @@ func main() {
 			Error:        aws.String("Aborted"),
 			ExecutionArn: exec.ExecutionArn,
 		}
-		_, err := svc.StopExecution(stopInput)
+		_, err := a.Sfc.StopExecution(stopInput)
 		if err != nil {
 			fmt.Println("Error stopping execution: ", err)
 		} else {
