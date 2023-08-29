@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	utility "StepFunctions/Utilities"
+	utility "steps/Utilities"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sfn"
@@ -16,13 +16,11 @@ func main() {
 
 	targetDate := time.Date(2023, time.June, 12, 0, 0, 0, 0, time.UTC)
 
-	// ActivityLive := "arn:aws:states:us-east-1:389633136494:stateMachine:ACTIVITIES-LI0zVfbremKg"
-	// ActivityTest := "arn:aws:states:us-east-1:389633136494:stateMachine:ACTIVITIESTEST-gqNiSvxWmzQL"
-	OrdersLive := "arn:aws:states:us-east-1:389633136494:stateMachine:RAPISAMStateMachine-1YwcU3XmIcZ5"
-	// OrdersTest := "arn:aws:states:us-east-1:389633136494:stateMachine:RAPISAMTESTStateMachine-iHrvhFFyHHfR"
+	Live := "arn:aws:states:us-east-1:389633136494:stateMachine:DiscountValues-X7avbHjUiVjB"
+	// Test := "arn:aws:states:us-east-1:389633136494:stateMachine:RAPISAMTESTStateMachine-iHrvhFFyHHfR"
 
 	// Specify the ARN of the state machine to re-run failed executions for
-	stateMachineArn := OrdersLive
+	stateMachineArn := Live
 
 	var statusInput string
 	fmt.Println("Please enter what type of execution status you want to see:")

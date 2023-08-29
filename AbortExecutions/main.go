@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	utility "StepFunctions/Utilities"
+	utility "steps/Utilities"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sfn"
@@ -12,13 +12,14 @@ import (
 
 func main() {
 	a := utility.NewAwssession("")
+	fmt.Println(">>>>>>>>>>>> Starting :-) <<<<<<<<<<<<")
 	// ActivityLive := "arn:aws:states:us-east-1:389633136494:stateMachine:ACTIVITIES-LI0zVfbremKg"
 	// ActivityTest := "arn:aws:states:us-east-1:389633136494:stateMachine:ACTIVITIESTEST-gqNiSvxWmzQL"
-	OrdersLive := "arn:aws:states:us-east-1:389633136494:stateMachine:RAPISAMStateMachine-1YwcU3XmIcZ5"
-	// OrdersTest := "arn:aws:states:us-east-1:389633136494:stateMachine:RAPISAMTESTStateMachine-iHrvhFFyHHfR"
+	// OrdersLive := "arn:aws:states:us-east-1:389633136494:stateMachine:RAPISAMStateMachine-1YwcU3XmIcZ5"
+	OrdersTest := "arn:aws:states:us-east-1:389633136494:stateMachine:RAPISAMTESTStateMachine-iHrvhFFyHHfR"
 
 	// Specify the ARN of the state machine to re-run failed executions for
-	stateMachineArn := OrdersLive
+	stateMachineArn := OrdersTest
 
 	var statusInput string
 	fmt.Println("Please enter what type of execution status you want to see:")
@@ -26,11 +27,7 @@ func main() {
 	time.Sleep(1 * time.Second)
 	fmt.Println("SUCCEEDED")
 	time.Sleep(1 * time.Second)
-	fmt.Println("ABORTED")
-	time.Sleep(1 * time.Second)
 	fmt.Println("RUNNING")
-	time.Sleep(1 * time.Second)
-	fmt.Println("TIMED_OUT")
 	fmt.Println("Type now...")
 	fmt.Scanln(&statusInput)
 	status := statusInput
@@ -47,24 +44,20 @@ func main() {
 		return
 	}
 
-	// Loop through the executions and retrieve the input for each one
-	for _, execution := range resp.Executions {
-		// Specify the ARN of the execution to retrieve the input for
-		executionArn := *execution.ExecutionArn
-
-		// Call the DescribeExecution method to retrieve information about the execution
-		descInput := &sfn.DescribeExecutionInput{
-			ExecutionArn: aws.String(executionArn),
+	// Loop through the list of running executions and call the stop execution API for each one
+	for _, exec := range resp.Executions {
+		stopInput := &sfn.StopExecutionInput{
+			Cause:        aws.String("Aborting execution"),
+			Error:        aws.String("Aborted"),
+			ExecutionArn: exec.ExecutionArn,
 		}
-
-		descResp, err := a.Sfc.DescribeExecution(descInput)
+		_, err := a.Sfc.StopExecution(stopInput)
 		if err != nil {
-			fmt.Println("Error describing execution:", err)
-			continue
+			fmt.Println("Error stopping execution: ", err)
+		} else {
+			fmt.Println("Stopped execution: ", *exec.ExecutionArn)
 		}
-
-		input := *descResp.Input
-		fmt.Printf("Status : %s,\n Input : %s\n\n", status, input)
 	}
-	fmt.Println(">>>>>>>>>>>>>>>>>>>> DONE :-) <<<<<<<<<<<<<<<<<<<<<<<<<<<")
+
+	fmt.Println(">>>>>>>>>>>> DONE :-) <<<<<<<<<<<<")
 }
